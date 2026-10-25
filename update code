@@ -1,0 +1,182 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>NOVA // CYBER</title>
+<style>
+*{box-sizing:border-box}
+html,body{
+  margin:0;width:100%;height:100%;
+  overflow:hidden;background:#000;color:#00ff66;
+  font-family:Menlo,Monaco,Consolas,monospace
+}
+#screen{
+  position:fixed;inset:0;overflow:hidden;
+  padding:12px 14px;
+  background:radial-gradient(ellipse at center,#031208 0%,#000 75%)
+}
+#header{
+  position:relative;z-index:2;
+  display:flex;justify-content:space-between;
+  gap:8px;padding:9px 0 13px;
+  border-bottom:1px solid #14572c;
+  font-size:12px;letter-spacing:1px;
+  background:#000
+}
+#brand{font-weight:bold;text-shadow:0 0 9px #00ff66}
+#status{color:#72ff9c}
+#viewport{
+  position:absolute;top:58px;bottom:0;left:0;right:0;
+  overflow:hidden;padding:10px 14px
+}
+#code{
+  margin:0;white-space:pre-wrap;overflow-wrap:anywhere;
+  font-size:12px;line-height:1.65;
+  color:#39ff78;text-shadow:0 0 4px #00ff4430;
+  will-change:transform
+}
+#shade{
+  position:fixed;inset:0;pointer-events:none;z-index:3;
+  background:repeating-linear-gradient(
+    to bottom,transparent 0px,transparent 3px,
+    #00ff6608 4px
+  )
+}
+#ending{
+  display:none;position:fixed;z-index:5;inset:0;
+  background:#000;align-items:center;
+  justify-content:center;text-align:center;padding:25px
+}
+#ending h1{
+  color:#00ff66;font-size:clamp(25px,6vw,42px);
+  text-shadow:0 0 22px #00ff66
+}
+#ending p{color:#9bffb8;line-height:2}
+#ending button{
+  padding:12px 24px;background:#00ff66;
+  color:#001b08;border:0;border-radius:5px;
+  font-weight:bold;font-size:15px
+}
+</style>
+</head>
+<body>
+<div id="screen">
+  <div id="header">
+    <span id="brand">NOVA // CYBER</span>
+    <span id="status">● SYSTEM ACTIVE</span>
+  </div>
+  <div id="viewport">
+    <pre id="code"></pre>
+  </div>
+</div>
+<div id="shade"></div>
+
+<div id="ending">
+  <div>
+    <h1>ACCESS SEQUENCE COMPLETE</h1>
+    <p>هک با موفقیت انجام شد!</p>
+    <p>از اعتمادتان متشکریم.</p>
+    <p style="font-size:11px;color:#777">
+      NOVA CYBER — VISUAL EFFECT
+    </p>
+    <button onclick="restart()">اجرای مجدد</button>
+  </div>
+</div>
+
+<script>
+const code = document.getElementById("code");
+const viewport = document.getElementById("viewport");
+const ending = document.getElementById("ending");
+const status = document.getElementById("status");
+
+const templates = [
+  "const session = await nova.initialize();",
+  "let buffer = new Uint8Array(4096);",
+  "function processPacket(data) {",
+  "  return data.map(x => x ^ 0x2A);",
+  "}",
+  "for (let i = 0; i < buffer.length; i++) {",
+  "  buffer[i] = Math.floor(Math.random() * 256);",
+  "}",
+  "const response = { status: 'PROCESSING' };",
+  "console.log('NOVA sequence running...');",
+  "async function executeStage(index) {",
+  "  const result = await simulate(index);",
+  "  return { stage: index, result };",
+  "}",
+  "const matrix = Array.from({length: 8},",
+  "  () => Math.random().toString(16).slice(2));",
+  "for (const item of matrix) {",
+  "  console.log('processing:', item);",
+  "}",
+  "const checksum = buffer.reduce((a,b) => a+b,0);",
+  "await new Promise(resolve => setTimeout(resolve, 10));",
+  "const state = { ready: true, mode: 'visual' };",
+  "requestAnimationFrame(renderFrame);",
+  "const output = JSON.stringify(state);",
+  "/* NOVA CYBER TERMINAL */"
+];
+
+let active = false;
+let timer;
+let frame;
+let offset = 0;
+let startedAt = 0;
+
+function addLines(count=8){
+  let output = "";
+  for(let i=0;i<count;i++){
+    const stamp = new Date().toISOString().slice(11,23);
+    const line = templates[Math.floor(Math.random()*templates.length)];
+    output += "[" + stamp + "] " + line + "\n";
+  }
+  code.textContent += output;
+  if(code.textContent.length > 18000){
+    code.textContent = code.textContent.slice(-12000);
+  }
+}
+
+function scrollFrame(now){
+  if(!active)return;
+  if(!startedAt)startedAt=now;
+  offset += 0.8;
+  code.style.transform = "translateY(-" + offset + "px)";
+
+  if(offset > 120){
+    offset = 0;
+    code.style.transform = "translateY(0)";
+    addLines(7);
+  }
+  frame = requestAnimationFrame(scrollFrame);
+}
+
+function restart(){
+  clearTimeout(timer);
+  cancelAnimationFrame(frame);
+  active = true;
+  startedAt = 0;
+  offset = 0;
+  code.style.transform = "translateY(0)";
+  code.textContent = "";
+  ending.style.display = "none";
+  status.textContent = "● SYSTEM ACTIVE";
+
+  addLines(32);
+  frame = requestAnimationFrame(scrollFrame);
+
+  timer = setTimeout(() => {
+    active = false;
+    cancelAnimationFrame(frame);
+    status.textContent = "● SEQUENCE COMPLETE";
+    ending.style.display = "flex";
+  }, 15000);
+}
+
+restart();
+</script>
+</body>
+</html>
+```
